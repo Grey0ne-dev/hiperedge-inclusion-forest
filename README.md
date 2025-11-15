@@ -796,11 +796,9 @@ If you find this useful, consider:
 
 ## 📞 Contact
 
-- **Author:** Your Name
-- **Email:** your.email@example.com
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Paper:** [arXiv:XXXX.XXXXX](https://arxiv.org)
-
+- **Author:** Sergei Mkhoyan
+- **Email:** sergey2002gurgen@gmail.com
+- **GitHub:** https://github.com/Grey0ne-dev
 ---
 
 ## 🙏 Acknowledgments
