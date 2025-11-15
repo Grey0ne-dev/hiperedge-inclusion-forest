@@ -1,0 +1,5 @@
+tests
+*.o
+example
+nested_benchmark
+benchmark_weighted
