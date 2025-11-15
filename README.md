@@ -56,7 +56,7 @@
 
 | Data Structure | Random Data | Nested Data | Winner |
 |----------------|-------------|-------------|--------|
-| **HIF (Yours)** | 240ms | **0.93ms** ✓ | **Nested** |
+| **HIF** | 240ms | **0.93ms** ✓ | **Nested** |
 | Naive Array | **1.2ms** ✓ | 1.2ms | Random |
 | Hash Table | **2.5ms** ✓ | 2.5ms | Random |
 | FP-Tree | 1.8ms | **1.0ms** ✓ | **Nested** |
@@ -66,7 +66,7 @@
 
 | Data Structure | Average Case | Pruning | Exact |
 |----------------|--------------|---------|-------|
-| **HIF (Yours)** | **O(log n)** ✓ | YES ✓ | YES ✓ |
+| **HIF** | **O(log n)** ✓ | YES ✓ | YES ✓ |
 | Naive Array | O(n) | NO | YES ✓ |
 | Hash Table | O(m) | NO | YES ✓ |
 | FP-Tree | O(2^k) ✗ | PARTIAL | YES ✓ |
