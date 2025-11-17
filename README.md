@@ -16,6 +16,90 @@
 
 ---
 
+## 📊 Visual Guide: How It Works
+
+### Simple Insertion Example
+
+```
+Step 1: Insert {1,2,3,4,5} w=5.0
+    [ROOT]
+    {1,2,3,4,5}
+    w=5.0
+
+Step 2: Insert {1,2,3} w=3.0 (subset of root)
+    [ROOT]
+    {1,2,3,4,5}
+    w=5.0
+      │
+      └──> {1,2,3}  ← Added as child
+           w=3.0
+
+Step 3: Insert {1,2} w=2.0 (subset of {1,2,3})
+    [ROOT]
+    {1,2,3,4,5}
+    w=5.0
+      │
+      └──> {1,2,3}
+           w=3.0
+             │
+             └──> {1,2}  ← Nested deeper
+                  w=2.0
+```
+
+### Child Stealing (Dynamic Rearrangement)
+
+```
+BEFORE: Insert {1,2,3,4,5,6} w=10.0
+    [ROOT]
+    {1,2,3}
+    w=3.0
+      │
+      └──> {1,2}
+           w=2.0
+
+AFTER: The new hyperedge "steals" the old root!
+    [ROOT]
+    {1,2,3,4,5,6}  ← New root
+    w=10.0
+      │
+      └──> {1,2,3}  ← Old root becomes child
+           w=3.0
+             │
+             └──> {1,2}  ← Entire subtree moved!
+                  w=2.0
+```
+
+### Weight-First Ordering
+
+```
+Insert {1,2} w=10.0 first, then {1,2,3} w=3.0
+
+Result: Smaller set with higher weight becomes parent!
+    [ROOT]
+    {1,2}  ← Higher weight (10.0)
+    w=10.0
+      │
+      └──> {1,2,3}  ← Lower weight (3.0)
+           w=3.0
+
+This enables O(k) top-k queries by weight!
+```
+
+### Multiple Roots (Incomparable Sets)
+
+```
+Insert {1,2,3} w=3.0 and {5,6,7} w=4.0
+
+    [ROOT 1]        [ROOT 2]
+    {1,2,3}         {5,6,7}
+    w=3.0           w=4.0
+
+They're incomparable (no subset relationship)
+→ Remain as separate trees in the forest
+```
+
+---
+
 ## 🚀 Key Advantages
 
 ### ✅ **Blazing Fast on Nested Data**
@@ -47,6 +131,85 @@
 - Comprehensive test suite (12 edge cases + 5 applications)
 - No memory leaks (verified with valgrind)
 - Clean C implementation, easy to port to other languages
+
+---
+
+## ⚙️ How Insertion Works (Detailed)
+
+### Weight-First Comparison Rules
+
+```
+┌─────────────────────────────────────────────┐
+│ Given: NewNode and ExistingNode            │
+│                                             │
+│ Step 1: Compare weights (±15% tolerance)   │
+│   • If weights similar → Check subsets     │
+│   • If NewNode heavier → NewNode is PARENT │
+│   • If NewNode lighter → NewNode is CHILD  │
+│                                             │
+│ Step 2: For similar weights, check subsets │
+│   • If NewNode ⊂ Existing → CHILD          │
+│   • If Existing ⊂ NewNode → PARENT (steal) │
+│   • If incomparable → SIBLING              │
+└─────────────────────────────────────────────┘
+```
+
+### Example: Building a Complete Structure
+
+```
+Insert sequence: 
+  1. {1,2,3,4,5} w=5.0
+  2. {1,2,3} w=3.0
+  3. {5,6,7} w=4.0
+  4. {1,2} w=2.0
+  5. {1,2,3,4,5,6,7} w=7.0
+
+Step-by-step evolution:
+
+After (1):
+    {1,2,3,4,5}
+    w=5.0
+
+After (2):
+    {1,2,3,4,5}
+    w=5.0
+      └──> {1,2,3}
+           w=3.0
+
+After (3) - incomparable sets, new root:
+    {1,2,3,4,5}    {5,6,7}
+    w=5.0          w=4.0
+      │
+      └──> {1,2,3}
+           w=3.0
+
+After (4) - nested deeper:
+    {1,2,3,4,5}    {5,6,7}
+    w=5.0          w=4.0
+      │
+      └──> {1,2,3}
+           w=3.0
+             │
+             └──> {1,2}
+                  w=2.0
+
+After (5) - STEALS BOTH ROOTS!
+    {1,2,3,4,5,6,7}  ← New unified root
+    w=7.0
+      ├──> {1,2,3,4,5}
+      │    w=5.0
+      │      │
+      │      └──> {1,2,3}
+      │           w=3.0
+      │             │
+      │             └──> {1,2}
+      │                  w=2.0
+      │
+      └──> {5,6,7}
+           w=4.0
+
+Final: Single tree with 2 branches!
+```
 
 ---
 
@@ -680,6 +843,89 @@ Base=256:  510 sets  → 0.25 ms  (0.000490 ms/insert)
 Base=512:  1022 sets → 0.93 ms  (0.000910 ms/insert)
 ```
 **Scaling:** Sub-linear! (Balanced tree structure)
+
+---
+
+## 🗑️ Deletion and Pruning Operations
+
+### Simple Node Deletion
+
+```
+BEFORE: Delete {1,2,3}
+    [ROOT]
+    {1,2,3,4,5}
+    w=5.0
+      │
+      └──> {1,2,3}  ← Delete this
+           w=3.0
+             │
+             └──> {1,2}  ← Child gets deleted too!
+                  w=2.0
+
+AFTER:
+    [ROOT]
+    {1,2,3,4,5}
+    w=5.0
+
+Note: Deletion is RECURSIVE - all children removed!
+```
+
+### Prune by Weight Threshold
+
+```
+BEFORE: Prune nodes with weight < 5.0
+    [ROOT]
+    {1,2,3,4,5}
+    w=10.0
+      ├──> {1,2,3}
+      │    w=5.0  ← Keep (weight >= 5.0)
+      │      │
+      │      └──> {1,2}
+      │           w=2.0  ← Delete (weight < 5.0)
+      │
+      └──> {3,4}
+           w=3.0  ← Delete (weight < 5.0)
+
+AFTER:
+    [ROOT]
+    {1,2,3,4,5}
+    w=10.0
+      │
+      └──> {1,2,3}
+           w=5.0
+
+Removed: 2 nodes (weight threshold filtering)
+```
+
+### Algorithm Flow
+
+```
+Insertion:                  Deletion:
+  ┌─────────┐                ┌─────────┐
+  │ Compare │                │ Locate  │
+  │ weights │                │ node    │
+  └────┬────┘                └────┬────┘
+       │                          │
+       ▼                          ▼
+  ┌─────────┐              ┌──────────┐
+  │ Check   │              │ Delete   │
+  │ subsets │              │ children │
+  └────┬────┘              │ first    │
+       │                   └────┬─────┘
+       ▼                        │
+  ┌─────────┐                   ▼
+  │ Insert  │              ┌──────────┐
+  │ or      │              │ Remove   │
+  │ steal   │              │ from     │
+  └─────────┘              │ parent   │
+                           └────┬─────┘
+                                │
+                                ▼
+                           ┌──────────┐
+                           │ Free     │
+                           │ memory   │
+                           └──────────┘
+```
 
 ---
 
