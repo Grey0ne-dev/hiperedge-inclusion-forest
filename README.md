@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/Hyperedge-Inclusion_Forest-purple?style=for-the-badge" alt="Hyperedge Inclusion Forest">
+  <img src="https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C">
+  <img src="https://img.shields.io/badge/memory-checked-brightgreen?style=for-the-badge" alt="Memory checked">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT">
+</p>
 
 # HIF — Hyperedge Inclusion Forest
 
