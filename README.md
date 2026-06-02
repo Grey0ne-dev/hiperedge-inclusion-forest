@@ -2,24 +2,26 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Hypergraph-Decomposition-purple?style=for-the-badge" alt="Hypergraph Decomposition">
+  <img src="https://img.shields.io/badge/Inclusion-Forest-8A2BE2?style=for-the-badge" alt="Inclusion Forest">
   <img src="https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C">
   <img src="https://img.shields.io/badge/standard-C11-blue?style=for-the-badge" alt="C11">
   <img src="https://img.shields.io/badge/memory-ASan%2FLSan%2FValgrind_clean-brightgreen?style=for-the-badge" alt="Memory checked">
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT License">
 </p>
 
-> A pure C library for **weighted hypergraph decomposition** using inclusion-based forest hierarchy.  
+> A pure C library for **weighted hypergraph decomposition** using inclusion-based forest hierarchy.
 > Or, less academically: **a forest where dominant hyperedges adopt weaker contained hyperedges**.
+
 ---
 
 ## What is HIF?
 
 **HIF** stands for **Hyperedge Inclusion Forest**.
 
-It was created as a tool for **hypergraph decomposition**: taking a weighted hypergraph and organizing its hyperedges into a forest based on set inclusion and weight dominance.
+It was created as a tool for **hypergraph decomposition**: taking a weighted hypergraph and organizing its hyperedges into a forest based on **set inclusion** and **weight dominance**.
 
-Each node is a hyperedge.  
-Each tree represents an inclusion hierarchy.  
+Each node is a hyperedge.
+Each tree represents an inclusion hierarchy.
 Each parent is a heavier superset of its children.
 
 A parent-child relationship is valid only when:
@@ -27,7 +29,7 @@ A parent-child relationship is valid only when:
 ```text
 child.vertices ⊆ parent.vertices
 parent.weight >= child.weight
-````
+```
 
 So a heavier superset can become the parent of a lighter subset.
 
@@ -38,13 +40,16 @@ Example:
 ├── {1,2,3} w=7.0
 │   └── {1,2} w=3.0
 └── {3,4} w=2.0
+
+{8,9} w=100.0
 ```
 
 Disjoint or incomparable hyperedges become separate roots.
 
 No fake hierarchy.
+No forced clustering.
 No “everything is secretly a tree” cope.
-Only valid inclusion relationships.
+Only valid hyperedge inclusion.
 
 ---
 
@@ -52,7 +57,30 @@ Only valid inclusion relationships.
 
 Because sometimes a normal graph is not enough.
 
-Sometimes your data looks like this:
+A normal graph connects pairs of vertices:
+
+```text
+A -- B
+B -- C
+```
+
+A hypergraph connects whole groups of vertices:
+
+```text
+{A, B, C}
+{A, C, D, E}
+{B, D}
+```
+
+HIF treats those groups as first-class objects and decomposes them into dominance regions:
+
+```text
+dominant / broad hyperedges   → roots
+contained / weaker hyperedges → descendants
+unrelated structures          → separate trees
+```
+
+This is useful when your data looks like:
 
 ```text
 weighted sets
@@ -65,14 +93,68 @@ hierarchical decomposition
 
 And then ordinary adjacency lists start sweating.
 
-HIF is useful when you need to organize weighted hyperedges by:
+---
 
-* inclusion
-* dominance
-* weight
-* overlap
-* subset/superset queries
-* hierarchical clustering-like structure
+## What HIF is good for
+
+HIF is useful when you want to explore, summarize, prune, or query overlapping weighted sets.
+
+Possible use cases include:
+
+* weighted hypergraph decomposition
+* frequent itemset hierarchy exploration
+* market basket bundle decomposition
+* permission / role hierarchy analysis
+* biological pathway or gene-set organization
+* document/topic/tag hierarchy extraction
+* cybersecurity event-pattern grouping
+* program-analysis feature grouping
+* lattice or poset summarization
+* experimental graph and hypergraph research
+
+HIF is strongest when your data has:
+
+```text
+many overlapping sets
+meaningful containment
+weights that represent importance, frequency, risk, score, or dominance
+queries like “what contains this?”
+need for hierarchy rather than flat clustering
+```
+
+HIF is weaker when:
+
+```text
+almost no sets contain each other
+all hyperedges are random and incomparable
+you only need pairwise graph edges
+you only need a database table
+you only need a priority queue
+you need a full lattice with all multi-parent relations preserved
+```
+
+---
+
+## What HIF is not
+
+HIF is not a database.
+
+HIF is not a heap.
+
+HIF is not a general graph library.
+
+HIF is not a full lattice data structure.
+
+A good mental model:
+
+```text
+SQL stores hyperedges.
+Heaps rank hyperedges.
+Graphs connect vertices.
+HIF decomposes weighted hyperedges into inclusion-dominance forests.
+```
+
+It is a specialized in-memory structure for weighted hypergraph decomposition.
 
 ---
 
@@ -617,6 +699,40 @@ less crying during queries
 
 ---
 
+## Lattices, cubes, and other dangerous shapes
+
+HIF can be applied to a full lattice, Boolean lattice, or face lattice of an n-dimensional cube, but it does **not** preserve the full multi-parent topology.
+
+A lattice is usually a DAG where one element may have many valid parents.
+
+HIF extracts a forest-shaped decomposition:
+
+```text
+full lattice = many valid inclusion edges
+HIF          = one chosen parent path per node
+```
+
+So HIF is useful for:
+
+```text
+summarization
+pruning
+hierarchy extraction
+dominance-region exploration
+navigable decomposition
+```
+
+But HIF is not suitable when you need exact lattice algebra, all cover relations, joins, meets, or full incidence preservation.
+
+Brutal version:
+
+```text
+A lattice is a cathedral of relationships.
+HIF turns it into a dungeon map with one chosen staircase per room.
+```
+
+---
+
 ## Build
 
 Simple build:
@@ -773,8 +889,29 @@ Do not use HIF when you only need:
 * a normal graph
 * a plain hash set
 * a vector
+* a priority queue
+* a database table
 * a linked list with academic cosplay
 * vibes
+
+---
+
+## Status
+
+Experimental, but usable.
+
+This project is mainly a research/engineering playground for weighted hypergraph decomposition in C.
+
+The API may evolve as better use cases, benchmarks, and theoretical properties become clear.
+
+Current positioning:
+
+```text
+Not a database.
+Not a heap.
+Not a general graph library.
+A specialized decomposition structure for weighted hyperedges.
+```
 
 ---
 
@@ -813,4 +950,3 @@ Seriously.
 
 Free the forest.
 
-```
