@@ -1,4 +1,4 @@
-````md
+
 # HIF — Hyperedge Inclusion Forest
 
 > A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.
@@ -7,7 +7,7 @@
 
 ![C](https://img.shields.io/badge/language-C-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Memory checks](https://github.com/YOUR_NAME/YOUR_REPO/actions/workflows/memory.yml/badge.svg)
+![Memory checks](https://github.com/Grey0ne-dev/hiperedge-inclusion-forest/actions/workflows/memory.yml/badge.svg)
 
 ---
 
@@ -806,5 +806,4 @@ Seriously.
 
 Free the forest.
 
-```
 ```
