@@ -313,12 +313,15 @@ static int visit_count = 0;
 static int visit_sum = 0;
 
 int test_visitor(Node *node, void *user_data) {
+    (void)user_data;
     visit_count++;
     visit_sum += node->he.nverts;
     return 0;
 }
 
 int early_stop_visitor(Node *node, void *user_data) {
+    (void)node;
+    (void)user_data;
     visit_count++;
     return (visit_count >= 5) ? 1 : 0;  // Stop after 5 nodes
 }

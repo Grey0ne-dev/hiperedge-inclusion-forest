@@ -2,15 +2,14 @@
  * Hyperedge Inclusion Forest (HIF)
  * Weight-Based Hierarchical Hypergraph Decomposition
  *
- * A novel data structure that organizes weighted hypergraphs by:
- * - PRIMARY:   Weight (heavier edges rise to roots)
- * - SECONDARY: Subset relationships (maintain lattice structure)
- * - TERTIARY:  Overlap (cluster similar hyperedges)
+ * A data structure that organizes weighted hypergraphs by:
+ * - PRIMARY:   Inclusion (parents are supersets of children)
+ * - SECONDARY: Weight monotonicity (parents are at least as heavy)
  *
  * Result: Natural hierarchical decomposition with:
  *   ✓ Dominant elements at roots
  *   ✓ Peripheral elements at leaves
- *   ✓ Overlapping elements clustered
+ *   ✓ Correct pruning for subset/superset queries
  *   ✓ Disjoint elements separated
  *
  * Copyright (c) 2024
@@ -37,21 +36,36 @@ typedef struct Node {
     int            children_cap;
 } Node;
 
-/*
- * Max-heap of Node pointers ordered by weight (heaviest at top).
- * Used internally to support true O(k log k) find_top_k queries.
- */
+/* Max-heap of Node pointers ordered by weight (heaviest at top). */
 typedef struct {
     Node **data;
     int    size;
     int    cap;
 } NodeHeap;
 
+typedef struct VertexIndexEntry {
+    int                      vertex;
+    Node                   **nodes;
+    int                      nnodes;
+    int                      nodes_cap;
+    struct VertexIndexEntry *next;
+} VertexIndexEntry;
+
 typedef struct {
-    Node    **roots;
-    int       nroots;
-    int       roots_cap;
-    NodeHeap *root_heap;  /* always-valid heap over current roots */
+    Node             **roots;
+    int                nroots;
+    int                roots_cap;
+    NodeHeap          *root_heap;  /* always-valid heap over current roots */
+
+    Node             **nodes;      /* all nodes, insertion order */
+    int                nnodes;
+    int                nodes_cap;
+
+    Node             **weight_order; /* lazy sorted view over nodes */
+    int                weight_order_dirty;
+
+    VertexIndexEntry **vertex_buckets; /* inverted index: vertex -> nodes */
+    int                vertex_nbuckets;
 } Forest;
 
 /* ========== HEAP API ========== */
@@ -93,9 +107,9 @@ void forest_free(Forest *f);
  * Insert a hyperedge into the forest.
  *
  * Ordering strategy:
- *   1. Heavier weight  → becomes parent
- *   2. Equal weight    → subset relationship determines hierarchy
- *   3. Incomparable    → separate branch / new root
+ *   1. A parent must be a superset of its child
+ *   2. A parent must have weight >= child weight
+ *   3. Incomparable or weight-inverted edges remain separate roots
  *
  * @param f       Forest to insert into
  * @param verts   Array of vertex IDs (will be sorted & deduplicated internally)
@@ -107,9 +121,8 @@ void insert_hyperedge(Forest *f, const int *verts, int nverts, double weight);
 /**
  * Find top-k heaviest hyperedges.
  *
- * Uses a working max-heap seeded with all roots, expanding children
- * on each pop.  Complexity: O(k log k) time, O(k·b) extra space
- * where b is the maximum branching factor.
+ * Uses the forest's lazy global weight index.
+ * Complexity: O(n log n) after weight mutations, O(k) while the index is clean.
  *
  * Caller must free the returned array (but NOT the nodes inside).
  *
@@ -131,6 +144,7 @@ int find_by_weight_threshold(Forest *f, double threshold);
 
 /**
  * Find the minimal superset of a query set (fewest extra vertices).
+ * The query array is sorted and deduplicated internally.
  *
  * @param f      Forest to search
  * @param query  Sorted vertex array
@@ -141,6 +155,7 @@ Node *find_minimal_superset(Forest *f, const int *query, int nquery);
 
 /**
  * Find the heaviest superset of a query set.
+ * The query array is sorted and deduplicated internally.
  *
  * @param f      Forest to search
  * @param query  Sorted vertex array

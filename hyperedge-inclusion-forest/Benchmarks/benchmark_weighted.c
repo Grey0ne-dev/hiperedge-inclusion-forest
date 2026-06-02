@@ -17,6 +17,7 @@ static double get_time() {
 
 // Generate power-law weights (realistic for social networks)
 static double power_law_weight(int i, int n) {
+    (void)n;
     // Zipf distribution: w(i) ∝ 1/i^α
     double alpha = 1.5;
     return 1.0 / pow(i + 1, alpha) * 100.0;
