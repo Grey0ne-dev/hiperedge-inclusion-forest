@@ -13,10 +13,6 @@
 > A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.  
 > Or, less academically: **a forest where big important sets adopt smaller weaker sets**.
 
-> A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.
->
-> Or, less academically: **a forest where big important sets adopt smaller weaker sets**.
-
 ---
 
 ## What is HIF?
