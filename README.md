@@ -1,25 +1,28 @@
-
-
 # HIF — Hyperedge Inclusion Forest
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Hyperedge-Inclusion_Forest-purple?style=for-the-badge" alt="Hyperedge Inclusion Forest">
+  <img src="https://img.shields.io/badge/Hypergraph-Decomposition-purple?style=for-the-badge" alt="Hypergraph Decomposition">
   <img src="https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C">
   <img src="https://img.shields.io/badge/standard-C11-blue?style=for-the-badge" alt="C11">
   <img src="https://img.shields.io/badge/memory-ASan%2FLSan%2FValgrind_clean-brightgreen?style=for-the-badge" alt="Memory checked">
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT License">
 </p>
 
-> A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.  
-> Or, less academically: **a forest where big important sets adopt smaller weaker sets**.
-
+> A pure C library for **weighted hypergraph decomposition** using inclusion-based forest hierarchy.  
+> Or, less academically: **a forest where dominant hyperedges adopt weaker contained hyperedges**.
 ---
 
 ## What is HIF?
 
 **HIF** stands for **Hyperedge Inclusion Forest**.
 
-It stores weighted hyperedges in a forest where every parent-child relationship must satisfy:
+It was created as a tool for **hypergraph decomposition**: taking a weighted hypergraph and organizing its hyperedges into a forest based on set inclusion and weight dominance.
+
+Each node is a hyperedge.  
+Each tree represents an inclusion hierarchy.  
+Each parent is a heavier superset of its children.
+
+A parent-child relationship is valid only when:
 
 ```text
 child.vertices ⊆ parent.vertices
