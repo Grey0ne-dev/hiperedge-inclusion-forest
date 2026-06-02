@@ -2,8 +2,6 @@
 
 # HIF — Hyperedge Inclusion Forest
 
-# HIF — Hyperedge Inclusion Forest
-
 <p align="center">
   <img src="https://img.shields.io/badge/Hyperedge-Inclusion_Forest-purple?style=for-the-badge" alt="Hyperedge Inclusion Forest">
   <img src="https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C">
