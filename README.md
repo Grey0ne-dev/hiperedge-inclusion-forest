@@ -19,10 +19,6 @@
 >
 > Or, less academically: **a forest where big important sets adopt smaller weaker sets**.
 
-![C](https://img.shields.io/badge/language-C-blue)
-![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Memory checks](https://github.com/Grey0ne-dev/hiperedge-inclusion-forest/actions/workflows/memory.yml/badge.svg)
-
 ---
 
 ## What is HIF?
