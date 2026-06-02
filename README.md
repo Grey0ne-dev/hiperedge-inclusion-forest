@@ -1,11 +1,19 @@
+
+
+# HIF — Hyperedge Inclusion Forest
+
+# HIF — Hyperedge Inclusion Forest
+
 <p align="center">
   <img src="https://img.shields.io/badge/Hyperedge-Inclusion_Forest-purple?style=for-the-badge" alt="Hyperedge Inclusion Forest">
   <img src="https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C">
-  <img src="https://img.shields.io/badge/memory-checked-brightgreen?style=for-the-badge" alt="Memory checked">
-  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT">
+  <img src="https://img.shields.io/badge/standard-C11-blue?style=for-the-badge" alt="C11">
+  <img src="https://img.shields.io/badge/memory-ASan%2FLSan%2FValgrind_clean-brightgreen?style=for-the-badge" alt="Memory checked">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT License">
 </p>
 
-# HIF — Hyperedge Inclusion Forest
+> A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.  
+> Or, less academically: **a forest where big important sets adopt smaller weaker sets**.
 
 > A pure C data structure for organizing weighted hyperedges into an inclusion-based hierarchy.
 >
